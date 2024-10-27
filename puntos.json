@@ -1,0 +1,27 @@
+[
+  {
+    "nombre": "DEPRIF Castro",
+    "descripcion": "Departamento Incendios Forestales Chiloé",
+	"contacto": "652530810",
+    "latitud": -42.4739337,
+    "longitud": -73.7700031
+  },
+  {
+    "nombre": "Encargado emergencias Castro",
+    "descripcion": "Encargado unidad GRD Castro",
+    "latitud": -42.4840,
+    "longitud": -73.7630
+  },
+  {
+    "nombre": "Cuartel general bomberos Castro",
+    "descripcion": "Unidades de bomberos",
+    "latitud": -42.4828,
+    "longitud": -73.7655
+  },
+  {
+    "nombre": "Cuartel bomberos sexta compañia",
+    "descripcion": "Unidad de bomberos",
+    "latitud": -42.4728,
+    "longitud": -73.7766
+  }
+]
