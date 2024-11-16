@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visor de recursos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #header {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 1.5em;
+    }
+
+    #map {
+      width: 100%;
+      height: 85vh;
+    }
+
+    .ol-popup {
+      background: white;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
+      position: absolute;
+      bottom: 12px;
+      left: -50px;
+      min-width: 150px;
+      font-size: 0.9em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+	
+	  /* Estilos para el contenedor */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    /* Estilo del contenedor del select */
+    .select-container {
+      margin-bottom: 20px;
+    }
+
+    /* Estilos para el menú select */
+    #layerSelector {
+      appearance: none;
+      background-color: #f1f1f1;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+      outline: none;
+      width: 200px;
+      transition: all 0.3s ease;
+    }
+
+    /* Icono de flecha en el select */
+    #layerSelector::after {
+      content: '▼';
+      font-size: 14px;
+      color: #333;
+      position: absolute;
+      right: 15px;
+      pointer-events: none;
+    }
+
+    /* Efecto hover */
+    #layerSelector:hover {
+      background-color: #e0e0e0;
+      border-color: #888;
+    }
+
+    /* Efecto al hacer click */
+    #layerSelector:focus {
+      border-color: #555;
+    }
+
+    /* Estilos del mapa */
+    #map {
+      height: 500px;
+      width: 80%;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  /* Estilos del formulario */
+    .form-popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      border: 2px solid #ddd;
+      padding: 20px;
+      background-color: white;
+      z-index: 10;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	  overflow-y: auto; /* Agrega scroll para pantallas pequeñas */
+      border-radius: 10px;
+	  max-height: 80vh;
+    }
+    .form-popup h3 {
+      margin-top: 0;
+    }
+    .form-popup label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    .form-popup input, .form-popup select, .form-popup textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .form-popup button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .form-popup .btn-close {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .form-popup .btn-submit {
+      background-color: #2ecc71;
+      color: white;
+    }
+    #reportButton {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px 15px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Selecciona una capa:</h2>
+  <div class="select-container">
+    <select id="layerSelector">
+      <option value="todos">Mostrar todas</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="conaf">CONAF</option>
+      <option value="carabineros">Carabineros</option>
+	  <option value="comunidadpre">Comunidad Preparada</option>
+	  <option value="hospital">Hospitalario</option>
+	  <option value="encargadoemerg">Encargado de emergencias</option>
+	  </select>
+  </div>
+
+  </style>
+  
+</head>
+<body>
+
+  <div id="header">Visor de recursos para gestión de emergencias</div>
+   <button id="reportButton">R22A INICIAL (ALFA)</button>
+  <div id="map"></div>
+  
+   <!-- Formulario Emergente -->
+  <div class="form-popup" id="reportForm">
+    <h3>Formulario de Reporte de Emergencia</h3>
+
+    <label>A - Estado del Incendio</label>
+    <select id="estadoIncendio">
+      <option value="encombate">En Combate</option>
+      <option value="controlado">Controlado</option>
+	  <option value="extinguido">Extinguido</option>
+    </select>
+
+    <label>B - Superficie Preliminar (ha)</label>
+    <input type="number" id="superficiePreliminar" required>
+
+    <label>C - Recurso Primer Ataque</label>
+    <select id="recursoAtaque">
+      <option value="Unidad 1">Coigue 15</option>
+      <option value="Unidad 2">Coigue 16</option>
+	  <option value="Unidad 3">Coigue 17</option>
+	  <option value="Unidad 4">Coigue 18</option>
+	  <option value="Unidad 5">Coigue 19</option>
+	  <option value="Unidad 6">Coigue 26</option>
+	  <option value="Unidad 7">Coigue 28</option>
+	  <option value="Unidad 8">10-27</option>
+	  <option value="Unidad 9">10-27A</option>
+	  <option value="Unidad 10">10-13</option>
+	  
+      <!-- Agrega más unidades según sea necesario -->
+    </select>
+
+    <label>D - Comandante de Incidente</label>
+    <select id="comandanteIncidente">
+      <option value="Comandante 1">Marcelo Bustos Inostroza</option>
+      <option value="Comandante 2">Gloria Lepe</option>
+	  <option value="Comandante 3">Matias Cortez </option>
+	  <option value="Comandante 4">Francisco Uribe</option>
+	  <option value="Comandante 5">Daniel Constanzo</option>
+	  <option value="Comandante 6">Alonso Hernandez</option>
+	  <option value="Comandante 7">Yohana Calisto</option>
+      <!-- Agrega más nombres de comandantes -->
+    </select>
+
+  
+   <div class="form-section">
+    <label for="lugarE">E - Lugar del Incidente</label>
+    <input type="text" id="lugarE">
+  </div>
+
+    
+    <div class="form-section">
+    <label>F - Coordenadas operativas</label>
+    <div class="input-with-button">
+      <input type="text" id="coordenadasOperativas" readonly>
+      <button onclick="captureCoordinates('coordenadasOperativas')">Capturar</button>
+    </div>
+  </div>
+
+    <label>G - Solicitud de Recursos</label>
+    <select id="solicitudRecursos" multiple>
+      <option value="Helicóptero">Helicóptero</option>
+      <option value="Brigada">Brigada</option>
+      <option value="Técnico">Técnico</option>
+      <option value="Aljibe">Aljibe</option>
+      <option value="Saesa">Saesa</option>
+      <option value="Bomberos">Bomberos</option>
+    </select>
+
+    <label>H - Amenaza a</label>
+    <select id="amenaza" multiple>
+      <option value="Casas">Viviendas R-53</option>
+      <option value="Bosque Nativo">Bosque Nativo</option>
+      <option value="APR">APR - SSR</option>
+	   <option value="APR">Colegio</option>
+    </select>
+
+    <label>I - Combustible Afectado al Arribo</label>
+    <select id="combustible" multiple>
+      <option value="Espinillo">Espinillo - Ulex europaeus</option>
+      <option value="Bosque Nativo">Bosque Nativo</option>
+      <option value="Pastizal">Pastizal</option>
+    </select>
+
+    <label>J - Comportamiento General del Incendio</label>
+    <div>
+      <label>Velocidad de Propagación</label>
+      <select class="comportamiento">
+        <option value="Lento">Lento</option>
+        <option value="Moderado">Media</option>
+        <option value="Rápido">Media-Alta</option>
+		<option value="Rápido">Alta</option>
+		<option value="Rápido">Extrema</option>
+      </select>
+
+      <label>Intensidad del frente</label>
+      <select class="comportamiento">
+        <option value="Baja">Baja</option>
+        <option value="Moderada">Media</option>
+        <option value="Alta">Alta</option>
+		<option value="Alta">Extrema</option>
+      </select>
+
+      <label>Longitud de llama</label>
+      <select class="comportamiento">
+        <option value="Norte">Baja</option>
+        <option value="Sur">Media</option>
+        <option value="Este">Alta</option>
+        <option value="Oeste">Extrema</option>
+      </select>
+    </div>
+	 <!-- Objetivo Inicial -->
+  <div class="form-section">
+    <label for="objetivoInicial">K - Objetivo inicial</label>
+    <select id="objetivoInicial" multiple>
+      <option value="controlar">Controlar el incendio</option>
+      <option value="detener">Detener avance del incendio</option>
+      <option value="proteger">Proteger viviendas</option>
+    </select>
+    <button class="add-option" onclick="addOption('objetivoInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Estrategia Inicial -->
+  <div class="form-section">
+    <label for="estrategiaInicial">L - Estrategia inicial</label>
+    <select id="estrategiaInicial" multiple>
+      <option value="brigadas">Combate con brigadas terrestres</option>
+      <option value="aereo">Combate aéreo</option>
+    </select>
+    <button class="add-option" onclick="addOption('estrategiaInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Táctica Inicial -->
+  <div class="form-section">
+    <label for="tacticaInicial">M - Táctica inicial</label>
+    <select id="tacticaInicial" multiple>
+      <option value="manual">Uso de herramientas manuales</option>
+      <option value="agua">Uso de equipo de agua</option>
+      <option value="aeronave">Combate directo con aeronave</option>
+    </select>
+    <button class="add-option" onclick="addOption('tacticaInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Lugar del PC -->
+  <div class="form-section">
+    <label for="lugarPC">N - Lugar del PC</label>
+    <input type="text" id="lugarPC">
+  </div>
+
+  <!-- Coordenadas del PC -->
+  <div class="form-section">
+    <label>O - Coordenadas del PC</label>
+    <div class="button-group">
+      <input type="text" id="coordenadasPC" readonly>
+      <button class="capture-coordinates" onclick="captureCoordinates('coordenadasPC')">Capturar coordenadas</button>
+    </div>
+  </div>
+
+  <!-- Lugar del E -->
+  <div class="form-section">
+    <label for="lugarE">P - Lugar del E</label>
+    <input type="text" id="lugarE">
+  </div>
+
+  <!-- Coordenadas del E -->
+  <div class="form-section">
+    <label>Q - Coordenadas del E</label>
+    <input type="text" id="coordenadasE" readonly>
+    <button onclick="copyCoordinates('coordenadasPC', 'coordenadasE')">Copiar coordenadas del PC</button>
+  </div>
+
+  <!-- Ruta de ingreso y egreso -->
+  <div class="form-section">
+    <label for="rutaIngreso">R - Ruta de ingreso</label>
+    <select id="rutaIngreso" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+	  
+    </select>
+    <button class="add-option" onclick="addOption('rutaIngreso')">Añadir opción</button>
+  </div>
+  <div class="form-section">
+    <label for="rutaEgreso">S - Ruta de egreso</label>
+    <select id="rutaEgreso" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+    </select>
+    <button class="add-option" onclick="addOption('rutaEgreso')">Añadir opción</button>
+  </div>
+
+  <!-- Mensaje general de seguridad -->
+  <div class="form-section">
+    <label for="mensajeSeguridad">T - Mensaje general de seguridad</label>
+    <select id="mensajeSeguridad" multiple>
+      <option value="pendiente">Trabajo en pendiente</option>
+      <option value="cambioViento">Atención a cambios de viento</option>
+      <option value="rodados">Cuidado con rodados</option>
+    </select>
+    <button class="add-option" onclick="addOption('mensajeSeguridad')">Añadir opción</button>
+  </div>
+
+  <!-- Otros recursos presentes -->
+  <div class="form-section">
+    <label for="otrosRecursos">U - Otros recursos presentes</label>
+    <select id="otrosRecursos" multiple>
+      <option value="carabineros">Carabineros</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="saesa">SAESA</option>
+	  <option value="saesa">Encargado de emergencias</option>
+    </select>
+    <button class="add-option" onclick="addOption('otrosRecursos')">Añadir opción</button>
+  </div>
+
+  <!-- Sistema de comunicaciones -->
+  <div class="form-section">
+    <label for="sistemaComunicaciones">V - Sistema de comunicaciones</label>
+    <select id="sistemaComunicaciones">
+      <option value="vhf">VHF</option>
+      <option value="otro">Otro</option>
+    </select>
+  </div>
+
+  <!-- Canal o frecuencia -->
+  <div class="form-section">
+    <label for="canalFrecuencia">W - Canal o frecuencia</label>
+    <select id="canalFrecuencia">
+      <option value="canal2">Canal 2</option>
+      <option value="canal12">Canal 12</option>
+      <option value="canal13">Canal 13</option>
+      <option value="canal15">Canal 15</option>
+      <option value="canal16">Canal 16</option>
+    </select>
+  </div>
+
+    <button class="btn-submit" onclick="enviarReporte()">Enviar Reporte a WhatsApp</button>
+    <button class="btn-close" onclick="cerrarFormulario()">Cerrar</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+
+  <script>
+  
+    function addOption(selectId) {
+    const select = document.getElementById(selectId);
+    const newOption = prompt('Ingrese una nueva opción:');
+    if (newOption) {
+      const option = document.createElement('option');
+      option.text = newOption;
+      option.value = newOption.toLowerCase().replace(/ /g, '_');
+      option.selected = true;
+      select.add(option);
+    }
+  }
+
+  function captureCoordinates(id) {
+    navigator.geolocation.getCurrentPosition(position => {
+      document.getElementById(id).value = position.coords.latitude + ", " + position.coords.longitude;
+    });
+  }
+
+  function copyCoordinates(sourceId, targetId) {
+    document.getElementById(targetId).value = document.getElementById(sourceId).value;
+  }
+
+    const map = new ol.Map({
+      target: 'map',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ],
+      view: new ol.View({
+        center: ol.proj.fromLonLat([-73.7669, -42.4804]), // Centro en Castro, Chile
+        zoom: 8
+      })
+    });
+	
+	 let userCoordinates;
+
+    function localizar() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(position => {
+          userCoordinates = [position.coords.longitude, position.coords.latitude];
+          const coordProj = ol.proj.fromLonLat(userCoordinates);
+          document.getElementById('coordenadasOperativas').value = `Lat: ${userCoordinates[1]}, Lon: ${userCoordinates[0]}`;
+          map.getView().animate({ center: coordProj, zoom: 12 });
+        }, error => {
+          alert("No se pudo obtener la ubicación.");
+        });
+      } else {
+        alert("Geolocalización no está soportada.");
+      }
+    }
+    localizar();
+
+    // Mostrar y ocultar formulario
+    document.getElementById('reportButton').onclick = () => {
+      document.getElementById('reportForm').style.display = 'block';
+    };
+    function cerrarFormulario() {
+      document.getElementById('reportForm').style.display = 'none';
+    }
+
+    // Enviar reporte a WhatsApp
+    function enviarReporte() {
+      const estadoIncendio = document.getElementById('estadoIncendio').value;
+      const superficiePreliminar = document.getElementById('superficiePreliminar').value;
+      const recursoAtaque = document.getElementById('recursoAtaque').value;
+      const comandanteIncidente = document.getElementById('comandanteIncidente').value;
+      const lugarIncidente = document.getElementById('lugarIncidente').value;
+      const coordenadasOperativas = document.getElementById('coordenadasOperativas').value;
+
+      const solicitudRecursos = Array.from(document.getElementById('solicitudRecursos').selectedOptions)
+          .map(option => option.value).join(", ");
+      const amenaza = Array.from(document.getElementById('amenaza').selectedOptions)
+          .map(option => option.value).join(", ");
+      const combustible = Array.from(document.getElementById('combustible').selectedOptions)
+          .map(option => option.value).join(", ");
+
+      const comportamientoList = document.querySelectorAll(".comportamiento");
+      const comportamiento = Array.from(comportamientoList).map(select => select.value).join(", ");
+
+      // Crear mensaje para WhatsApp
+      const mensaje = `*Reporte de Emergencia*\n` +
+          `Estado del Incendio: ${estadoIncendio}\n` +
+          `Superficie Preliminar: ${superficiePreliminar} ha\n` +
+          `Recurso Primer Ataque: ${recursoAtaque}\n` +
+          `Comandante de Incidente: ${comandanteIncidente}\n` +
+          `Lugar del Incidente: ${lugarIncidente}\n` +
+          `Coordenadas: ${coordenadasOperativas}\n` +
+          `Solicitud de Recursos: ${solicitudRecursos}\n` +
+          `Amenaza a: ${amenaza}\n` +
+          `Combustible Afectado al Arribo: ${combustible}\n` +
+          `Comportamiento General: ${comportamiento}`;
+
+      const whatsappURL = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+      window.open(whatsappURL, '_blank');
+    }
+
+    const vectorSource = new ol.source.Vector();
+    const vectorLayer = new ol.layer.Vector({
+    source: vectorSource
+    });
+    map.addLayer(vectorLayer);
+	let allFeatures = [];
+
+    // Cargar puntos desde JSON externo
+    async function cargarPuntosDesdeJSON() {
+      const response = await fetch("puntos.json?t=" + new Date().getTime());
+      const puntos = await response.json();
+
+      puntos.forEach(punto => {
+        const feature = new ol.Feature({
+          geometry: new ol.geom.Point(
+            ol.proj.fromLonLat([punto.longitud, punto.latitud])
+          ),
+          name: punto.nombre,
+          description: punto.descripcion,
+          contact: punto.contacto, // Nuevo campo de contacto
+		  layer: punto.capa
+        });
+
+        feature.setStyle(new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 8,
+            fill: new ol.style.Fill({ color: 'blue' }),
+            stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+          })
+        }));
+
+        vectorSource.addFeature(feature);
+		allFeatures.push(feature); 
+      });
+    }
+
+    cargarPuntosDesdeJSON();
+	
+// Función para filtrar y mostrar puntos según la capa seleccionada
+    function filtrarPorCapa(capa) {
+      vectorSource.clear(); // Eliminar los puntos actuales del mapa
+
+      // Filtrar los puntos y volver a agregarlos al mapa
+      allFeatures.forEach(feature => {
+        if (capa === 'todos' || feature.get('layer') === capa) {
+          vectorSource.addFeature(feature);
+        }
+      });
+    }
+
+    // Evento de cambio en el selector de capas
+    document.getElementById("layerSelector").addEventListener("change", function() {
+      filtrarPorCapa(this.value);
+    });
+
+
+    // Crear popup
+    const popup = document.createElement('div');
+    popup.className = 'ol-popup';
+    document.body.appendChild(popup);
+
+    const overlay = new ol.Overlay({
+      element: popup,
+      positioning: 'bottom-center',
+      stopEvent: false,
+      offset: [0, -10]
+    });
+    map.addOverlay(overlay);
+
+    // Mostrar popup con información del punto
+    map.on('click', function(event) {
+      const feature = map.forEachFeatureAtPixel(event.pixel, function(feat) {
+        return feat;
+      });
+
+      if (feature) {
+        const coordinates = feature.getGeometry().getCoordinates();
+        const nombre = feature.get('name');
+        const descripcion = feature.get('description');
+        const contacto = feature.get('contact'); // Obtener el contacto
+
+   // Convertir las coordenadas a latitud y longitud para Google Maps
+        const lonLat = ol.proj.toLonLat(coordinates);
+        const lon = lonLat[0];
+        const lat = lonLat[1];
+		
+        overlay.setPosition(coordinates);
+        popup.innerHTML = `
+          <strong>${nombre}</strong><br>
+          ${descripcion}<br>
+          <strong>Contacto:</strong> ${contacto}<br>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank">
+            Ver en Google Maps
+          </a>
+        `;
+        popup.style.display = 'block';
+      } else {
+        popup.style.display = 'none';
+      }
+    });
+
+    // Función de geolocalización automática
+    let usuarioMarker;
+    function localizar() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const userCoordinates = ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]);
+
+          // Crear o actualizar el marcador de usuario
+          if (!usuarioMarker) {
+            usuarioMarker = new ol.Feature({
+              geometry: new ol.geom.Point(userCoordinates)
+            });
+
+            usuarioMarker.setStyle(new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 10,
+                fill: new ol.style.Fill({ color: 'red' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+              })
+            }));
+
+            vectorSource.addFeature(usuarioMarker);
+          } else {
+            usuarioMarker.getGeometry().setCoordinates(userCoordinates);
+          }
+
+          map.getView().animate({ center: userCoordinates, zoom: 8});
+        }, error => {
+          alert("No se pudo obtener la ubicación. Verifica los permisos.");
+        });
+      } else {
+        alert("Geolocalización no está soportada en este navegador.");
+      }
+    }
+
+    // Llamar a la función de geolocalización automáticamente al cargar la página
+    window.onload = localizar;
+  </script>
+
+</body>
+</html>
