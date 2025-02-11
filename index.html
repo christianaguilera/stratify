@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes para respondedores</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.css" />
+  <style>
+/* 🎨 Estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* 🔹 Header */
+#header {
+  background-color: #2c3e50;
+  color: #ffffff;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 1.8em;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* 🗺️ Mapa */
+#map {
+  width: 100%;
+  height: 75vh;
+}
+
+/* 🔘 Contenedor de botones flotantes */
+.button-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* 🎨 Estilos generales de los botones */
+.button-container button {
+  flex: 1;
+  max-width: 120px;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+/* 🟦 Botón Azul */
+#reportButton {
+  background-color: #3498db;
+  border-color: #2980b9;
+  color: white;
+}
+
+#reportButton:hover {
+  background-color: #2980b9;
+  border-color: #1c6ea4;
+  transform: scale(1.08);
+}
+
+/* 🔴 Botón Rojo */
+#reportButton2 {
+  background-color: #e74c3c;
+  border-color: #c0392b;
+  color: white;
+}
+
+#reportButton2:hover {
+  background-color: #c0392b;
+  border-color: #a83226;
+  transform: scale(1.08);
+}
+
+/* 🟩 Botón Verde */
+#reportButton3 {
+  background-color: #27ae60;
+  border-color: #1e8449;
+  color: white;
+}
+
+#reportButton3:hover {
+  background-color: #1e8449;
+  border-color: #166534;
+  transform: scale(1.08);
+}
+
+/* 📝 Formulario emergente */
+.form-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -55%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.form-popup h3 {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  color: #333;
+  text-align: center;
+}
+
+.form-popup label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.form-popup input,
+.form-popup select,
+.form-popup textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+/* ❌ Botón de cierre */
+.form-popup .btn-close {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-popup .btn-close:hover {
+  background-color: #c0392b;
+}
+
+/* ✅ Botón de envío */
+.form-popup .btn-submit {
+   background-color: #25D366; /* Verde WhatsApp */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-popup .btn-submit:hover {
+  background-color: #27ae60;
+}
+
+/* ➕ Botón "Añadir opción" */
+.add-option {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.add-option:hover {
+  background-color: #1e8449;
+  transform: scale(1.05);
+}
+
+/* 📱 Media Queries para móviles */
+@media (max-width: 768px) {
+  /* Ajustar la altura del mapa */
+  #map {
+    height: 65vh;
+  }
+
+  /* Botones flotantes más compactos */
+  .button-container {
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 8px 0;
+  }
+
+  .button-container button {
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 5px;
+  }
+
+  /* Ajustes en el formulario */
+  .form-popup {
+    width: 95%;
+    max-width: 350px;
+    padding: 15px;
+  }
+
+  .form-popup h3 {
+    font-size: 1.1em;
+  }
+
+  .form-popup input,
+  .form-popup select,
+  .form-popup textarea {
+    font-size: 0.9em;
+  }
+}
+
+  </style>
+  
+</head>
+<body>
+  <div id="header">Reportes para respondedores</div>
+<div id="header"> Incendios Forestales</div>
+  
+  <!-- Botones flotantes -->
+  <div class="button-container">
+    <button id="reportButton">R22A INICIAL (ALFA)</button>
+    <button id="reportButton2">R22B AMPLIADO (BRAVO)</button>
+    <button id="reportButton3">R34</button>
+  </div>
+  
+  <div id="map"></div>
+
+  <!-- Ejemplo de formulario flotante -->
+  <div class="form-popup" id="formPopup">
+    <h3>Formulario</h3>
+    <label for="input1">Campo 1</label>
+    <input type="text" id="input1" placeholder="Ingresa algo...">
+    <label for="textarea1">Campo 2</label>
+    <textarea id="textarea1" placeholder="Escribe algo aquí..."></textarea>
+    <button class="btn-submit">Enviar</button>
+    <button class="btn-close" onclick="closeForm()">Cerrar</button>
+  </div>
+
+  <script>
+    function openForm() {
+      document.getElementById("formPopup").style.display = "block";
+    }
+
+    function closeForm() {
+      document.getElementById("formPopup").style.display = "none";
+    }
+  </script>
+</body>
+</html>
+
+  
+   <!-- Formulario Emergente1 -->
+  <div class="form-popup" id="reportForm">
+    <h3>R22A INICIAL</h3>
+ <div class="form-section">
+    <label for="nombreincidente">Nombre incidente</label>
+    <input type="text" id="nombreincidente">
+  </div>
+    <label>A - Estado del Incendio</label>
+    <select id="estadoIncendio">
+      <option value="encombate">En Combate</option>
+      <option value="controlado">Controlado</option>
+	  <option value="extinguido">Extinguido</option>
+    </select>
+
+    <label>B - Superficie Preliminar (ha)</label>
+    <input type="number" id="superficiePreliminar" required>
+
+<div>
+    <label>C - Recurso Primer Ataque</label>
+    <select id="recursoAtaque">
+      <option value="Coigue 15">Coigue 15</option>
+      <option value="Coigue 16">Coigue 16</option>
+	  <option value="Coigue 17">Coigue 17</option>
+	  <option value="Coigue 18">Coigue 18</option>
+	  <option value="Coigue 19">Coigue 19</option>
+	  <option value="Coigue 26">Coigue 26</option>
+	  <option value="Coigue 28">Coigue 28</option>
+	  <option value="10-27">10-27</option>
+	  <option value="10-27A">10-27A</option>
+	  <option value="10-13">10-13</option>	  
+      <!-- Agrega más unidades según sea necesario -->
+    </select>
+	<button class="add-option" onclick="addOption('recursoAtaque')">Añadir opción</button>
+	</div>
+
+<div>
+    <label>D - Comandante de Incidente</label>
+    <select id="comandanteIncidente">
+      <option value="Marcelo Bustos Inostroza">Marcelo Bustos Inostroza</option>
+      <option value="Gloria Lepe">Gloria Lepe</option>
+	  <option value="Matias Cortez">Matias Cortez </option>
+	  <option value="Francisco Uribe">Francisco Uribe</option>
+	  <option value="Daniel Constanzo">Daniel Constanzo</option>
+	  <option value="Alonso Hernandez">Alonso Hernandez</option>
+	  <option value="Yohana Calisto">Yohana Calisto</option>
+	  <option value="Jose Marin Guarda">Jose Marin Guarda</option>
+	   <option value="Patricio Triviño Saldivia">Patricio Triviño Saldivia</option>
+	    <option value="Hector Reyes Avalos">Hector Reyes Avalos</option>
+      <!-- Agrega más nombres de comandantes -->
+	      </select>
+		  <button class="add-option" onclick="addOption('comandanteIncidente')">Añadir opción</button>
+</div>
+  
+   <div class="form-section">
+    <label for="lugarE">E - Lugar del Incidente</label>
+    <input type="text" id="lugarE">
+  </div>
+
+    
+    <div class="form-section">
+    <label>F - Coordenadas operativas</label>
+    <div class="input-with-button">
+      <input type="text" id="coordenadasOperativas" readonly>
+	  <label for="coordenadasGMS">Coordenadas (GMS):</label>
+	  <input type="text" id="coordenadasGMS" readonly>
+	
+      <button onclick="captureCoordinates('coordenadasOperativas', 'coordenadasGMS')">Capturar</button>
+    </div>
+  </div>
+
+    <label>G - Solicitud de Recursos</label>
+    <select id="solicitudRecursos" multiple>
+      <option value="Helicóptero">Helicóptero</option>
+      <option value="Brigada">Brigada</option>
+      <option value="Técnico">Técnico</option>
+      <option value="Aljibe">Aljibe</option>
+      <option value="Saesa">Saesa</option>
+      <option value="Bomberos">Bomberos</option>
+	  <option value="avion cisterna">avion cisterna</option>
+    </select>
+
+    <label>H - Amenaza a</label>
+    <select id="amenaza" multiple>
+      <option value="Casas">Viviendas R-53</option>
+      <option value="Bosque Nativo">Bosque Nativo</option>
+      <option value="APR">APR - SSR</option>
+	   <option value="APR">Colegio</option>
+    </select>
+
+    <label>I - Combustible Afectado al Arribo</label>
+    <select id="combustible" multiple>
+      <option value="Espinillo - Ulex europaeus">Espinillo - Ulex europaeus</option>
+      <option value="Bosque Nativo">Bosque Nativo</option>
+      <option value="Pastizal">Pastizal</option>
+	  <option value="Plantacion">Plantacion</option>
+    </select>
+
+    <label>J - Comportamiento General del Incendio</label>
+<div>
+  <label>Velocidad de Propagación</label>
+  <select id="velocidadPropagacion">
+    <option value="Lento">Lento</option>
+    <option value="Media">Media</option>
+    <option value="Media-alta">Media-Alta</option>
+    <option value="Alta">Alta</option>
+    <option value="Extrema">Extrema</option>
+  </select>
+
+  <label>Intensidad del frente</label>
+  <select id="intensidadFrente">
+    <option value="Baja">Baja</option>
+    <option value="Media">Media</option>
+    <option value="Alta">Alta</option>
+    <option value="Extrema">Extrema</option>
+  </select>
+
+  <label>Longitud de llama</label>
+  <select id="longitudLlama">
+    <option value="Baja">Baja</option>
+    <option value="Media">Media</option>
+    <option value="Alta">Alta</option>
+    <option value="Extrema">Extrema</option>
+  </select>
+</div>
+	 <!-- Objetivo Inicial -->
+  <div class="form-section">
+    <label for="objetivoInicial">K - Objetivo inicial</label>
+    <select id="objetivoInicial" multiple>
+      <option value="controlar incendio">Controlar el incendio</option>
+      <option value="detener avance">Detener avance del incendio</option>
+      <option value="proteger viviendas">Proteger viviendas</option>
+    </select>
+    <button class="add-option" onclick="addOption('objetivoInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Estrategia Inicial -->
+  <div class="form-section">
+    <label for="estrategiaInicial">L - Estrategia inicial</label>
+    <select id="estrategiaInicial" multiple>
+      <option value="Combate con brigadas terrestres">Combate con brigadas terrestres</option>
+      <option value="Combate aéreo">Combate aéreo</option>
+    </select>
+    <button class="add-option" onclick="addOption('estrategiaInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Táctica Inicial -->
+  <div class="form-section">
+    <label for="tacticaInicial">M - Táctica inicial</label>
+    <select id="tacticaInicial" multiple>
+      <option value="Uso de herramientas manual">Uso de herramientas manuales</option>
+      <option value="Uso de equipo de agua">Uso de equipo de agua</option>
+      <option value="Combate directo con aeronave">Combate directo con aeronave</option>
+    </select>
+    <button class="add-option" onclick="addOption('tacticaInicial')">Añadir opción</button>
+  </div>
+
+  <!-- Lugar del PC -->
+  <div class="form-section">
+    <label for="lugarPC">N - Lugar del PC</label>
+    <input type="text" id="lugarPC">
+  </div>
+
+  <!-- Coordenadas del PC -->
+  <div class="form-section">
+    <label>O - Coordenadas del PC</label>
+    <div class="button-group">
+      <input type="text" id="coordenadasPC" readonly>
+      <button class="capture-coordinates" onclick="captureCoordinates('coordenadasPC')">Capturar coordenadas</button>
+    </div>
+  </div>
+
+  <!-- Lugar del E -->
+  <div class="form-section">
+    <label for="lugarE">P - Lugar del E</label>
+    <input type="text" id="lugarE">
+  </div>
+
+  <!-- Coordenadas del E -->
+  <div class="form-section">
+    <label>Q - Coordenadas del E</label>
+    <input type="text" id="coordenadasE" readonly>
+    <button onclick="copyCoordinates('coordenadasPC', 'coordenadasE')">Copiar coordenadas del PC</button>
+  </div>
+
+  <!-- Ruta de ingreso y egreso -->
+  <div class="form-section">
+    <label for="rutaIngreso">R - Ruta de ingreso</label>
+    <select id="rutaIngreso" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+	  
+    </select>
+    <button class="add-option" onclick="addOption('rutaIngreso')">Añadir opción</button>
+  </div>
+  <div class="form-section">
+    <label for="rutaEgreso">S - Ruta de egreso</label>
+    <select id="rutaEgreso" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+    </select>
+    <button class="add-option" onclick="addOption('rutaEgreso')">Añadir opción</button>
+  </div>
+
+  <!-- Mensaje general de seguridad -->
+  <div class="form-section">
+    <label for="mensajeSeguridad">T - Mensaje general de seguridad</label>
+    <select id="mensajeSeguridad" multiple>
+      <option value="trabajo en pendiente">Trabajo en pendiente</option>
+      <option value="Atencion a cambios de Viento">Atención a cambios de viento</option>
+      <option value="Cuidado con rodados">Cuidado con rodados</option>
+    </select>
+    <button class="add-option" onclick="addOption('mensajeSeguridad')">Añadir opción</button>
+  </div>
+
+  <!-- Otros recursos presentes -->
+  <div class="form-section">
+    <label for="otrosRecursos">U - Otros recursos presentes</label>
+    <select id="otrosRecursos" multiple>
+      <option value="carabineros">Carabineros</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="saesa">SAESA</option>
+	  <option value="encargado de emergencias">Encargado de emergencias</option>
+    </select>
+    <button class="add-option" onclick="addOption('otrosRecursos')">Añadir opción</button>
+  </div>
+
+  <!-- Sistema de comunicaciones -->
+  <div class="form-section">
+    <label for="sistemaComunicaciones">V - Sistema de comunicaciones</label>
+    <select id="sistemaComunicaciones">
+      <option value="vhf">VHF</option>
+      <option value="otro">Otro</option>
+    </select>
+  </div>
+
+  <!-- Canal o frecuencia -->
+  <div class="form-section">
+    <label for="canalFrecuencia">W - Canal o frecuencia</label>
+    <select id="canalFrecuencia">
+      <option value="canal2">Canal 2</option>
+      <option value="canal12">Canal 12</option>
+      <option value="canal13">Canal 13</option>
+      <option value="canal15">Canal 15</option>
+      <option value="canal16">Canal 16</option>
+    </select>
+  </div>
+	<button class="btn-submit" onclick="enviarReporte()">Enviar Reporte a WhatsApp</button>
+    <button class="btn-close" onclick="cerrarFormulario()">Cerrar</button>
+  </div>
+    	<!-- Formulario Meteorología -->
+ <div class="form-popup" id="meteorologiaFormulario">
+    <h3>R34 Reporte Meteorologia</h3>
+ <div class="form-section">
+    <label for="nombreincidente2">Nombre incidente</label>
+    <input type="text" id="nombreincidente2">
+  </div>
+
+  <label for="direccionViento">Dirección del Viento:</label>
+  <input type="text" id="direccionViento" name="direccionViento"><br><br>
+
+  <label for="velocidadViento">Velocidad del Viento (km/h):</label>
+  <input type="number" id="velocidadViento" name="velocidadViento"><br><br>
+
+  <label for="temperatura">Temperatura (°C):</label>
+  <input type="number" id="temperatura" name="temperatura"><br><br>
+
+  <label for="humedadRelativa">Humedad Relativa (%):</label>
+  <input type="number" id="humedadRelativa" name="humedadRelativa"><br><br>
+
+  <label for="nubosidad">Nubosidad (1/8 a 8/8):</label>
+  <input type="number" id="nubosidad" name="nubosidad" min="1" max="8"><br><br>
+
+  <label for="pendiente">Pendiente (%):</label>
+  <input type="number" id="pendiente" name="pendiente"><br><br>
+
+  <label for="topografia">Topografía:</label>
+  <input type="text" id="topografia" name="topografia"><br><br>
+
+  <label for="exposicion">Exposición:</label>
+  <select id="exposicion" name="exposicion">
+    <option value="Este">Este</option>
+    <option value="Norte">Norte</option>
+    <option value="Sur">Sur</option>
+    <option value="Oeste">Oeste</option>
+    <option value="Noroeste">Noroeste</option>
+    <option value="Suroeste">Suroeste</option>
+	<option value="plano">plano</option>
+  </select><br><br>
+
+  <div>
+    <button class="btn-submit" onclick="enviarFormularioMeteorologia()">Enviar reporte a Whatsapp</button>
+    <button class="btn-close" onclick="cerrarFormulariometeo()">Cerrar</button>
+	</div>
+</div>
+  
+<!-- Formulario Emergente2 -->
+  <div class="form-popup" id="reportForm1">
+    <h3>R22B AMPLIADO</h3>
+ <div class="form-section">
+    <label for="nombreincidente1">Nombre incidente</label>
+    <input type="text" id="nombreincidente1">
+  </div>
+  
+    <label>A - Estado del Incendio</label>
+    <select id="estadoIncendio1">
+      <option value="encombate">En Combate</option>
+      <option value="controlado">Controlado</option>
+	  <option value="extinguido">Extinguido</option>
+    </select>
+
+    <label>B - Superficie Preliminar (ha)</label>
+    <input type="number" id="superficiePreliminar1" required>
+
+    <label>C - Escenario</label>
+    <select id="escenario">
+      <option value="iforpl">Ifor-Pl (plantacion forestal)</option>
+      <option value="iforvn">Ifor-Vn (vegetacion natural)</option>
+	  <option value="ifiurfo">Ifiur-Fo (interfaz urbano forestal)</option>
+	  <option value="ifco">Ifco (cordillerano)</option>
+	  <option value="ifsu">Ifsu (subterraneo)</option>
+	  <option value="ifcso">Ifcso (conflicto social)</option>
+	  <option value="ifasp">Ifasp (area silvestre protegida)</option>
+	  <option value="ifins">Ifins (incendios insulares)</option>
+	  	  
+      <!-- Agrega más unidades según sea necesario -->
+    </select>
+
+    <label>D - NICOM</label>
+    <select id="nicom">
+      <option value="nicom1">NICOM 1</option>
+      <option value="nicom2">NICOM 2</option>
+	  <option value="nicom3">NICOM 3 </option>
+	  <option value="nicom4">NICOM 4</option>
+	  <option value="nicom5">NICOM 5</option>
+	 
+      <!-- Agrega más nombres de comandantes -->
+    </select>
+
+  <label>E - Comportamiento General del Incendio</label>
+    <div>
+      <label>Velocidad de Propagación</label>
+      <select class="comportamiento">
+        <option value="Lento">Lento</option>
+        <option value="Media">Media</option>
+        <option value="Media-alta">Media-Alta</option>
+		<option value="Alta">Alta</option>
+		<option value="Extrema">Extrema</option>
+      </select>
+
+      <label>Intensidad del frente</label>
+      <select class="comportamiento">
+        <option value="Baja">Baja</option>
+        <option value="Media">Media</option>
+        <option value="Alta">Alta</option>
+		<option value="Extrema">Extrema</option>
+      </select>
+
+      <label>Longitud de llama</label>
+      <select class="comportamiento">
+        <option value="Baja">Baja</option>
+        <option value="Media">Media</option>
+        <option value="Alta">Alta</option>
+        <option value="Extrema">Extrema</option>
+      </select>
+    </div>
+
+
+<!-- falta F-->
+
+<div id="sectores-container">
+  <label>F - Comportamiento específico del incendio por sector y recursos asignados</label>
+
+  <!-- Sector 1 -->
+  <div class="sector" id="sector1">
+    <label>Sector 1</label>
+    <label for="comportamiento1">Comportamiento</label>
+    <select id="comportamiento1">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos1">Recursos asignados</label>
+    <select id="recursos1" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+
+  <!-- Sector 2 -->
+  <div class="sector" id="sector2">
+    <label>Sector 2</label>
+    <label for="comportamiento2">Comportamiento</label>
+    <select id="comportamiento2">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos2">Recursos asignados</label>
+    <select id="recursos2" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+
+  <!-- Sector 3 -->
+  <div class="sector" id="sector3">
+    <label>Sector 3</label>
+    <label for="comportamiento3">Comportamiento</label>
+    <select id="comportamiento3">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos3">Recursos asignados</label>
+    <select id="recursos3" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+
+  <!-- Sector 4 -->
+  <div class="sector" id="sector4">
+    <label>Sector 4</label>
+    <label for="comportamiento4">Comportamiento</label>
+    <select id="comportamiento4">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos4">Recursos asignados</label>
+    <select id="recursos4" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+
+  <!-- Sector 5 -->
+  <div class="sector" id="sector5">
+    <label>Sector 5</label>
+    <label for="comportamiento5">Comportamiento</label>
+    <select id="comportamiento5">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos5">Recursos asignados</label>
+    <select id="recursos5" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+
+  <!-- Sector 6 -->
+  <div class="sector" id="sector6">
+    <label>Sector 6</label>
+    <label for="comportamiento6">Comportamiento</label>
+    <select id="comportamiento6">
+      <option value="Lento">Lento</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta</option>
+      <option value="Extrema">Extrema</option>
+    </select>
+
+    <label for="recursos6">Recursos asignados</label>
+    <select id="recursos6" multiple>
+      <option value="brigadas">Brigadas</option>
+      <option value="helicoptero">Helicóptero</option>
+      <option value="camiones">Camiones cisterna</option>
+      <option value="bomberos">Bomberos</option>
+      <option value="carabineros">Carabineros</option>
+    </select>
+  </div>
+</div>
+
+ <div class="form-section">
+    <label for="objetivoInicial1">G - Objetivo</label>
+    <select id="objetivoInicial1" multiple>
+      <option value="Controlar el incendio">Controlar el incendio</option>
+      <option value="Detener avance del incendio">Detener avance del incendio</option>
+      <option value="Proteger viviendas">Proteger viviendas</option>
+    </select>
+    <button class="add-option" onclick="addOption('objetivoInicial1')">Añadir opción</button>
+  </div>
+
+ <!-- Estrategia Inicial -->
+  <div class="form-section">
+    <label for="estrategiaInicial1">H - Estrategia</label>
+    <select id="estrategiaInicial1" multiple>
+      <option value="Combate con brigadas terrestres">Combate con brigadas terrestres</option>
+      <option value="Combate aéreo">Combate aéreo</option>
+    </select>
+    <button class="add-option" onclick="addOption('estrategiaInicial1')">Añadir opción</button>
+  </div>
+
+  <!-- Táctica Inicial -->
+  <div class="form-section">
+    <label for="tacticaInicial1">I - Táctica</label>
+    <select id="tacticaInicial1" multiple>
+      <option value="Uso herramientas manuales">Uso de herramientas manuales</option>
+      <option value="Uso de equipo de agua">Uso de equipo de agua</option>
+      <option value="Combate directo con aeronave">Combate directo con aeronave</option>
+    </select>
+    <button class="add-option" onclick="addOption('tacticaInicial1')">Añadir opción</button>
+  </div>
+
+  <!-- Lugar del PC -->
+  <div class="form-section">
+    <label for="lugarPC2">J - Lugar del PC</label>
+    <input type="text" id="lugarPC2">
+  </div>
+
+  <!-- Coordenadas del PC -->
+  <div class="form-section">
+    <label>K - Coordenadas del PC</label>
+    <div class="button-group">
+      <input type="text" id="coordenadasPC2" readonly>
+      <button class="capture-coordinates" onclick="captureCoordinates('coordenadasPC2')">Capturar coordenadas</button>
+    </div>
+  </div>
+
+  <!-- Lugar del E -->
+  <div class="form-section">
+    <label for="lugarE2">L - Lugar del E</label>
+    <input type="text" id="lugarE2">
+  </div>
+
+  <!-- Coordenadas del E -->
+  <div class="form-section">
+    <label>M - Coordenadas del E</label>
+    <input type="text" id="coordenadasE2" readonly>
+    <button onclick="copyCoordinates('coordenadasPC2', 'coordenadasE2')">Copiar coordenadas del PC</button>
+  </div>
+
+  <!-- Ruta de ingreso y egreso -->
+  <div class="form-section">
+    <label for="rutaIngreso2">N - Ruta de ingreso</label>
+    <select id="rutaIngreso2" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+	  
+    </select>
+    <button class="add-option" onclick="addOption('rutaIngreso2')">Añadir opción</button>
+  </div>
+  <div class="form-section">
+    <label for="rutaEgreso2">O - Ruta de egreso</label>
+    <select id="rutaEgreso2" multiple>
+      <option value="w65">W-65</option>
+      <option value="ruta5">Ruta 5</option>
+      <option value="w155">W-155</option>
+    </select>
+    <button class="add-option" onclick="addOption('rutaEgreso2')">Añadir opción</button>
+  </div>
+
+  <!-- Mensaje general de seguridad -->
+  <div class="form-section">
+    <label for="mensajeSeguridad2">P - Mensaje general de seguridad</label>
+    <select id="mensajeSeguridad2" multiple>
+      <option value="Trabajo en pendiente">Trabajo en pendiente</option>
+      <option value="Atencion a cambios de Viento">Atención a cambios de viento</option>
+      <option value="Cuidado con rodados">Cuidado con rodados</option>
+    </select>
+    <button class="add-option" onclick="addOption('mensajeSeguridad2')">Añadir opción</button>
+  </div>
+
+  <!-- Otros recursos presentes -->
+  <div class="form-section">
+    <label for="solicitudrecursos1">Q - Solicitud de recursos</label>
+    <select id="solicitudrecursos1" multiple>
+      <option value="Carabineros">Carabineros</option>
+      <option value="Bomberos">Bomberos</option>
+      <option value="Saesa">SAESA</option>
+	  <option value="Tecnico">Tecnico</option>
+	  <option value="Brigada">Brigada</option>
+	  <option value="Ambulancia">Ambulancia</option>
+    </select>
+    <button class="add-option" onclick="addOption('solicitudrecursos1')">Añadir opción</button>
+  </div>
+
+   <label>R - Combustible inicial</label>
+    <select id="combustibleinicial1" multiple>
+      <option value="Espinillo - Ulex europaeus">Espinillo - Ulex europaeus</option>
+      <option value="Bosque Nativo">Bosque Nativo</option>
+      <option value="Pastizal">Pastizal</option>
+    </select>
+
+	
+   <label>S - Inicio cercano a</label>
+    <select id="iniciocercano1" multiple>
+      <option value="caminop">Camino principal</option>
+      <option value="caminos">Camino secundario</option>
+    
+    </select>
+	<button class="add-option" onclick="addOption('iniciocercano1')">Añadir opción</button>
+
+  <div class="form-section">
+    <label for="predio1">T - Predio de origen</label>
+    <input type="text" id="predio1">
+  </div>
+
+ <div class="form-section">
+    <label for="propietario1">U - Propietario origen</label>
+    <input type="text" id="propietario1">
+  </div>
+  
+	<label>V - Otros daños</label>
+    <select id="otrosdaños1" multiple>
+      <option value="cerco">Cerco</option>
+      <option value="casas">Casas</option>
+      <option value="bodega">Bodega</option>
+    </select>
+	<button class="add-option" onclick="addOption('otrosdaños1')">Añadir opción</button>
+	
+	<div>
+    <button class="btn-submit" onclick="enviarReportebravo()">Enviar reporte a Whatsapp</button>
+    <button class="btn-close" onclick="cerrarFormulario2()">Cerrar</button>
+	</div>
+	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+ 
+
+  
+  
+  
+   <script>
+ function addOption(selectId) {
+    const select = document.getElementById(selectId);
+    const newOption = prompt('Ingrese una nueva opción:');
+    if (newOption) {
+      const option = document.createElement('option');
+      option.text = newOption;
+      option.value = newOption.toLowerCase().replace(/ /g, '_');
+      option.selected = true;
+      select.add(option);
+    }
+  }
+      // Capturar coordenadas y convertirlas a GMS
+        function captureCoordinates(decimalId, gmsId) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                // Mostrar en el campo de decimales
+                document.getElementById(decimalId).value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+                // Convertir a GMS
+                const latGMS = convertToGMS(latitude);
+                const lonGMS = convertToGMS(longitude);
+
+                // Mostrar en el campo de GMS
+                document.getElementById(gmsId).value = `${latGMS} | ${lonGMS}`;
+            }, error => {
+                alert("No se pudo capturar las coordenadas. Asegúrate de permitir el acceso a la ubicación.");
+            });
+        }
+		
+		 // Función para convertir grados decimales a GMS
+        function convertToGMS(decimal) {
+            const grados = Math.floor(Math.abs(decimal));
+            const minutosDecimal = (Math.abs(decimal) - grados) * 60;
+            const minutos = Math.floor(minutosDecimal);
+            const segundos = ((minutosDecimal - minutos) * 60).toFixed(2);
+            const direccion = decimal >= 0 ? (decimal > 0 ? "N" : "E") : (decimal < 0 ? "S" : "O");
+
+            return `${grados}° ${minutos}' ${segundos}" ${direccion}`;
+        }
+
+  function copyCoordinates(sourceId, targetId) {
+    document.getElementById(targetId).value = document.getElementById(sourceId).value;
+  }
+
+	
+	
+
+   
+
+    // Mostrar y ocultar formulario alfa
+    document.getElementById('reportButton').onclick = () => {
+      document.getElementById('reportForm').style.display = 'block';
+    };
+    function cerrarFormulario() {
+      document.getElementById('reportForm').style.display = 'none';
+    }
+	
+	 // Mostrar y ocultar formulario bravo
+    document.getElementById('reportButton2').onclick = () => {
+      document.getElementById('reportForm1').style.display = 'block';
+    };
+    function cerrarFormulario2() {
+      document.getElementById('reportForm1').style.display = 'none';
+    }
+	
+	// Mostrar y ocultar formulario METEREOLOGIA
+	 document.getElementById('reportButton3').onclick = () => {
+      document.getElementById('meteorologiaFormulario').style.display = 'block';
+    };
+    function cerrarFormulariometeo() {
+      document.getElementById('meteorologiaFormulario').style.display = 'none';
+    }
+		
+function enviarFormularioMeteorologia() {
+  // Recolectar datos del formulario de meteorología
+  const nombreincidentetiempo = document.getElementById('nombreincidente2').value;
+  const direccionViento = document.getElementById("direccionViento").value;
+  const velocidadViento = document.getElementById("velocidadViento").value;
+  const temperatura = document.getElementById("temperatura").value;
+  const humedadRelativa = document.getElementById("humedadRelativa").value;
+  const nubosidad = document.getElementById("nubosidad").value;
+  const pendiente = document.getElementById("pendiente").value;
+  const topografia = document.getElementById("topografia").value;
+  const exposicion = document.getElementById("exposicion").value;
+
+  // Construir el mensaje para WhatsApp
+  const mensajeMeteorologia = `*Reporte Meteorológico*  
+   *Nombre incidente:* ${nombreincidentetiempo}
+  *Dirección del Viento:* ${direccionViento}
+  *Velocidad del Viento:* ${velocidadViento} km/h
+  *Temperatura:* ${temperatura} °C
+  *Humedad Relativa:* ${humedadRelativa} %
+  *Nubosidad:* ${nubosidad}/8
+  *Pendiente:* ${pendiente} %
+  *Topografía:* ${topografia}
+  *Exposición:* ${exposicion}`;
+
+  // Enviar el mensaje a WhatsApp
+  const url = `https://wa.me/?text=${encodeURIComponent(mensajeMeteorologia)}`;
+  window.open(url, '_blank');
+}
+
+
+    // Enviar reporte a WhatsApp
+  function enviarReporte() {
+	const nombreincidente = document.getElementById('nombreincidente').value;
+    const estadoIncendio = document.getElementById('estadoIncendio').value;
+    const superficiePreliminar = document.getElementById('superficiePreliminar').value;
+    const recursoAtaque = document.getElementById('recursoAtaque').value;
+    const comandanteIncidente = document.getElementById('comandanteIncidente').value;
+    const coordenadasOperativas = document.getElementById('coordenadasOperativas').value;
+	const coordenadasGMS = document.getElementById('coordenadasGMS').value;
+    const solicitudRecursos = Array.from(document.getElementById('solicitudRecursos').selectedOptions).map(opt => opt.text).join(', ');
+    const amenaza = Array.from(document.getElementById('amenaza').selectedOptions).map(opt => opt.text).join(', ');
+    const combustible = Array.from(document.getElementById('combustible').selectedOptions).map(opt => opt.text).join(', ');
+	 // Obtener comportamiento general
+    //const comportamientoSelects = document.querySelectorAll('.comportamiento');
+   // const comportamientoGeneral = Array.from(comportamientoSelects).map(select => select.value).join(', ');
+    const velocidadPropagacion = document.getElementById('velocidadPropagacion').value;
+    const intensidadFrente = document.getElementById('intensidadFrente').value;
+    const longitudLlama = document.getElementById('longitudLlama').value;
+    const objetivoInicial = Array.from(document.getElementById('objetivoInicial').selectedOptions).map(opt => opt.text).join(', ');
+    const estrategiaInicial = Array.from(document.getElementById('estrategiaInicial').selectedOptions).map(opt => opt.text).join(', ');
+    const tacticaInicial = Array.from(document.getElementById('tacticaInicial').selectedOptions).map(opt => opt.text).join(', ');
+    const lugarPC = document.getElementById('lugarPC').value;
+    const coordenadasPC = document.getElementById('coordenadasPC').value;
+	const lugarE = document.getElementById('lugarE').value;
+    const coordenadasE = document.getElementById('coordenadasE').value;
+    const rutaIngreso = Array.from(document.getElementById('rutaIngreso').selectedOptions).map(opt => opt.text).join(', ');
+    const rutaEgreso = Array.from(document.getElementById('rutaEgreso').selectedOptions).map(opt => opt.text).join(', ');
+    const mensajeSeguridad = Array.from(document.getElementById('mensajeSeguridad').selectedOptions).map(opt => opt.text).join(', ');
+    const otrosRecursos = Array.from(document.getElementById('otrosRecursos').selectedOptions).map(opt => opt.text).join(', ');
+    const sistemaComunicaciones = document.getElementById('sistemaComunicaciones').value;
+    const canalFrecuencia = document.getElementById('canalFrecuencia').value;
+
+    // Construir el mensaje
+    const mensaje = `*Reporte de Incendio:*
+	Nombre incidente: ${nombreincidente}
+    *A) Estado del Incendio:* ${estadoIncendio}
+    *B) Superficie Preliminar:* ${superficiePreliminar} ha
+    *C) Recurso Primer Ataque:* ${recursoAtaque}
+    *D) Comandante de Incidente:* ${comandanteIncidente}
+    *E) Lugar del Incidente:* ${lugarE}
+    *F) Coordenadas Operativas:* ${coordenadasOperativas}
+	   Coordenadas GMS: ${coordenadasGMS}
+    *G) Solicitud de Recursos:* ${solicitudRecursos}
+    *H) Amenaza a:* ${amenaza}
+    *I) Combustible Afectado:* ${combustible}
+	*J) Comportamiento General:*
+       - Velocidad de Propagación: ${velocidadPropagacion}
+       - Intensidad del Frente: ${intensidadFrente}
+       - Longitud de Llama: ${longitudLlama}
+    *K) Objetivo Inicial:* ${objetivoInicial}
+    *L) Estrategia Inicial:* ${estrategiaInicial}
+    *M) Táctica Inicial:* ${tacticaInicial}
+    *N) Lugar del PC:* ${lugarPC}
+    *O) Coordenadas del PC:* ${coordenadasPC}
+	*P) Lugar del E:* ${lugarE}
+    *Q) Coordenadas del E:* ${coordenadasE}
+    *R) Ruta de Ingreso:* ${rutaIngreso}
+    *S) Ruta de Egreso:* ${rutaEgreso}
+    *T) Mensaje de Seguridad:* ${mensajeSeguridad}
+    *U) Otros Recursos Presentes:* ${otrosRecursos}
+    *V) Sistema de Comunicaciones:* ${sistemaComunicaciones}
+    *W) Canal o Frecuencia:* ${canalFrecuencia}`;
+
+      const whatsappURL = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+      window.open(whatsappURL, '_blank');
+    }
+	
+	   // Enviar reporte a WhatsApp bravo
+	   
+ function enviarReportebravo() {
+  // Recolectar datos del formulario
+  const nombreIncidente = document.getElementById("nombreincidente1").value;
+  const estadoIncendio = document.getElementById("estadoIncendio1").value;
+  const superficiePreliminar = document.getElementById("superficiePreliminar1").value;
+  const escenario = document.getElementById("escenario").value;
+  const nicom = document.getElementById("nicom").value;
+  const velocidadPropagacion1 = document.querySelectorAll(".comportamiento")[0].value;
+  const intensidadFrente1 = document.querySelectorAll(".comportamiento")[1].value;
+  const longitudLlama1 = document.querySelectorAll(".comportamiento")[2].value;
+  const objetivos = Array.from(document.getElementById("objetivoInicial1").selectedOptions).map(opt => opt.value).join(", ");
+  const estrategias = Array.from(document.getElementById("estrategiaInicial1").selectedOptions).map(opt => opt.value).join(", ");
+  const tacticas = Array.from(document.getElementById("tacticaInicial1").selectedOptions).map(opt => opt.value).join(", ");  
+  const lugarPC = document.getElementById("lugarPC2").value;
+  const coordenadasPC = document.getElementById("coordenadasPC2").value;
+  const lugarE = document.getElementById("lugarE2").value;
+  const coordenadasE = document.getElementById("coordenadasE2").value;
+  const rutasIngreso = Array.from(document.getElementById("rutaIngreso2").selectedOptions).map(opt => opt.value).join(", ");
+  const rutasEgreso = Array.from(document.getElementById("rutaEgreso2").selectedOptions).map(opt => opt.value).join(", ");
+  const mensajesSeguridad = Array.from(document.getElementById("mensajeSeguridad2").selectedOptions).map(opt => opt.value).join(", ");
+  const recursos = Array.from(document.getElementById("solicitudrecursos1").selectedOptions).map(opt => opt.value).join(", ");
+  const combustibleInicial = Array.from(document.getElementById("combustibleinicial1").selectedOptions).map(opt => opt.value).join(", ");
+  const inicioCercano = Array.from(document.getElementById("iniciocercano1").selectedOptions).map(opt => opt.value).join(", ");
+  const predio = document.getElementById("predio1").value;
+  const propietario = document.getElementById("propietario1").value;
+  const otrosDanos = Array.from(document.getElementById("otrosdaños1").selectedOptions).map(opt => opt.value).join(", ");
+  
+  //recoelccion datos de sectores
+    let sectoresMensaje = "*F - Comportamiento específico por sector y recursos asignados:*\n";
+  for (let i = 1; i <= 6; i++) {
+    const comportamiento = document.getElementById(`comportamiento${i}`).value;
+    const recursosAsignados = Array.from(document.getElementById(`recursos${i}`).selectedOptions).map(opt => opt.value).join(", ");
+    sectoresMensaje += `- *Sector ${i}:*\n  - Comportamiento: ${comportamiento}\n  - Recursos Asignados: ${recursosAsignados}\n`;
+  }
+
+  // Construir el mensaje para WhatsApp
+  // aca se creo en el paso anterior la variable especifica para construir el mensaje
+  const mensajebravo = `*Reporte R22B Ampliado*  
+  *Nombre Incidente:* ${nombreIncidente}
+  *A - Estado del Incendio:* ${estadoIncendio}
+  *B - Superficie Preliminar (ha):* ${superficiePreliminar}
+  *C - Escenario:* ${escenario}
+  *D - NICOM:* ${nicom}    
+  *E - Comportamiento General del Incendio:*
+  - Velocidad de Propagación: ${velocidadPropagacion1}
+  - Intensidad del Frente: ${intensidadFrente1}
+  - Longitud de Llama: ${longitudLlama1}  
+  *F - Comportamiento específico por sector y recursos asignados:* ${sectoresMensaje}
+  *G - Objetivos:* ${objetivos}
+  *H - Estrategias:* ${estrategias}
+  *I - Tácticas:* ${tacticas}  
+  *J - Lugar del PC:* ${lugarPC}
+  *K - Coordenadas del PC:* ${coordenadasPC}
+  *L - Lugar del E:* ${lugarE}
+  *M - Coordenadas del E:* ${coordenadasE}  
+  *N - Rutas de Ingreso:* ${rutasIngreso}
+  *O - Rutas de Egreso:* ${rutasEgreso}
+  *P - Mensaje General de Seguridad:* ${mensajesSeguridad}  
+  *Q - Recursos Solicitados:* ${recursos}
+  *R - Combustible Inicial:* ${combustibleInicial}
+  *S - Inicio Cercano a:* ${inicioCercano}  
+  *T - Predio de Origen:* ${predio}
+  *U - Propietario de Origen:* ${propietario}
+  *V - Otros Daños:* ${otrosDanos}`;
+
+  // Enviar a WhatsApp
+  const url = `https://wa.me/?text=${encodeURIComponent(mensajebravo)}`;
+  window.open(url, '_blank');
+  }
+	
+   
+  </script>
+
+</body>
+</html>
