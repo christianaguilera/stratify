@@ -1,10 +1,10 @@
 const CACHE_NAME = 'reportes-v10';
 const FILES_TO_CACHE = [
-  '/testing/',
-  '/testing/index.html',
-  '/testing/manifest.json',
-  '/testing/icon-192.png',
-  '/testing/icon-512.png'
+  '/stratify/',
+  '/stratify/index.html',
+  '/stratify/manifest.json',
+  '/stratify/icon-192.png',
+  '/stratify/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -39,4 +39,5 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
+
 
