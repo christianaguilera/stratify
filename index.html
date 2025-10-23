@@ -1249,7 +1249,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (selectsAlfa.length > 0) {
     const principalAlfa = selectsAlfa[0]; // Velocidad de Propagación
     principalAlfa.addEventListener('change', () => {
-      if (principalAlfa.value === 'Nulo') {
+      if (!principalAlfa.value || principalAlfa.value === 'Nulo') {
         selectsAlfa.forEach(sel => sel.value = 'Nulo');
       }
     });
@@ -1274,15 +1274,4 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
 
