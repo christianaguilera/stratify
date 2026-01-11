@@ -1136,7 +1136,6 @@ function enviarFormularioMeteorologia() {
     const recursoAtaque = document.getElementById('recursoAtaque').value;
     const comandanteIncidente = document.getElementById('comandanteIncidente').value;
     const coordenadasOperativas = document.getElementById('coordenadasOperativas').value;
-	  const fotoIncidente = document.getElementById('fotoIncidente').value;
 	const coordenadasGMS = document.getElementById('coordenadasGMS').value;
     const solicitudRecursos = Array.from(document.getElementById('solicitudRecursos').selectedOptions).map(opt => opt.text).join(', ');
     const amenaza = Array.from(document.getElementById('amenaza').selectedOptions).map(opt => opt.text).join(', ');
@@ -1171,7 +1170,6 @@ function enviarFormularioMeteorologia() {
     *E) Lugar del Incidente:* ${lugarE}
     *F) Coordenadas Operativas:* ${coordenadasOperativas}
 	   Coordenadas GMS: ${coordenadasGMS}
-	    Foto GPS: ${fotoIncidente}
     *G) Solicitud de Recursos:* ${solicitudRecursos}
     *H) Amenaza a:* ${amenaza}
     *I) Combustible Afectado:* ${combustible}
@@ -1327,6 +1325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
