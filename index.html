@@ -1033,47 +1033,25 @@ body, html {
       select.add(option);
     }
   }
-     <script>
-function captureCoordinates(decimalId, gmsId) {
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      const accuracy = position.coords.accuracy; // metros
+      // Capturar coordenadas y convertirlas a GMS
+        function captureCoordinates(decimalId, gmsId) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
 
-      // 🚫 Validar precisión
-      if (accuracy > 10) {
-        alert(
-          `Precisión GPS insuficiente (${accuracy.toFixed(1)} m).\n` +
-          `Espere unos segundos y vuelva a capturar.\n` +
-          `Se requiere precisión menor a 10 m.`
-        );
-        return;
-      }
+                // Mostrar en el campo de decimales
+                document.getElementById(decimalId).value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
+                // Convertir a GMS
+                const latGMS = convertToGMS(latitude);
+                const lonGMS = convertToGMS(longitude);
 
-      // Mostrar coordenadas decimales
-      document.getElementById(decimalId).value =
-        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-
-      // Convertir a GMS
-      const latGMS = convertToGMS(latitude, true);
-      const lonGMS = convertToGMS(longitude, false);
-
-      document.getElementById(gmsId).value =
-        `${latGMS} | ${lonGMS}`;
-    },
-    error => {
-      alert("No se pudo capturar la ubicación. Verifique permisos de GPS.");
-    },
-    {
-      enableHighAccuracy: true, // 🔥 GPS real
-      timeout: 15000,
-      maximumAge: 0
-    }
-  );
-}
-
+                // Mostrar en el campo de GMS
+                document.getElementById(gmsId).value = `${latGMS} | ${lonGMS}`;
+            }, error => {
+                alert("No se pudo capturar las coordenadas. Asegúrate de permitir el acceso a la ubicación.");
+            });
+        }
 
 		
 		 // Función para convertir grados decimales a GMS
@@ -1349,6 +1327,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
