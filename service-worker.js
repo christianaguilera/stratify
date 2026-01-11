@@ -1,4 +1,4 @@
-const CACHE_NAME = 'reportes-v18';
+const CACHE_NAME = 'reportes-v19';
 const FILES_TO_CACHE = [
   '/stratify/',
   '/stratify/index.html',
@@ -39,6 +39,7 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
+
 
 
 
