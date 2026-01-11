@@ -365,6 +365,16 @@ body, html {
       <button onclick="captureCoordinates('coordenadasOperativas', 'coordenadasGMS')">Capturar</button>
     </div>
   </div>
+	    <!-- 📷 Campo Fotografía -->
+  <label for="fotoIncidente">Fotografía del lugar:</label>
+  <input
+    type="file"
+    id="fotoIncidente"
+    name="fotoIncidente"
+    accept="image/*"
+    capture="environment"
+  >
+</div>
 
     <label>G - Solicitud de Recursos</label>
     <select id="solicitudRecursos" multiple>
@@ -564,8 +574,19 @@ body, html {
     <input type="text" id="nombreincidente2">
   </div>
 
-  <label for="direccionViento">Dirección del Viento:</label>
-  <input type="text" id="direccionViento" name="direccionViento"><br><br>
+ <label for="direccionViento">Dirección del Viento:</label>
+<select id="direccionViento" name="direccionViento">
+  <option value="">Seleccione dirección</option>
+  <option value="Norte">Norte</option>
+  <option value="Sur">Sur</option>
+  <option value="Este">Este</option>
+  <option value="Oeste">Oeste</option>
+  <option value="NorEste">NorEste</option>
+  <option value="NorOeste">NorOeste</option>
+  <option value="SurEste">SurEste</option>
+  <option value="SurOeste">SurOeste</option>
+</select>
+<br><br>
 
   <label for="velocidadViento">Velocidad del Viento (km/h):</label>
   <input type="number" id="velocidadViento" name="velocidadViento"><br><br>
@@ -944,7 +965,8 @@ body, html {
       <option value="Trabajo en pendiente">Trabajo en pendiente</option>
       <option value="Atencion a cambios de Viento">Atención a cambios de viento</option>
       <option value="Cuidado con rodados">Cuidado con rodados</option>
-    </select>
+		<option value="Trabajo con aeronaves">Trabajo con aeronaves</option>
+	 </select>
     <button class="add-option" onclick="addOption('mensajeSeguridad2')">Añadir opción</button>
   </div>
 
@@ -1121,6 +1143,7 @@ function enviarFormularioMeteorologia() {
     const recursoAtaque = document.getElementById('recursoAtaque').value;
     const comandanteIncidente = document.getElementById('comandanteIncidente').value;
     const coordenadasOperativas = document.getElementById('coordenadasOperativas').value;
+	  const fotoIncidente = document.getElementById('fotoIncidente').value;
 	const coordenadasGMS = document.getElementById('coordenadasGMS').value;
     const solicitudRecursos = Array.from(document.getElementById('solicitudRecursos').selectedOptions).map(opt => opt.text).join(', ');
     const amenaza = Array.from(document.getElementById('amenaza').selectedOptions).map(opt => opt.text).join(', ');
@@ -1310,6 +1333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
