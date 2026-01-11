@@ -303,6 +303,7 @@ body, html {
       <option value="en combate">En Combate</option>
       <option value="controlado">Controlado</option>
 	  <option value="extinguido">Extinguido</option>
+	  <option value="bajo observacion">Bajo observación</option>
     </select>
 
     <label>B - Superficie Preliminar (ha)</label>
@@ -323,7 +324,7 @@ body, html {
 	  <option value="10-13">10-13</option>	  
 	  <option value="10-26">10-26</option>
 	  <option value="10-26A">10-26A</option>
-		 <option value="bomberos">bomberos</option>
+	  <option value="bomberos">bomberos</option>
       <!-- Agrega más unidades según sea necesario -->
     </select>
 	<button class="add-option" onclick="addOption('recursoAtaque')">Añadir opción</button>
@@ -343,6 +344,7 @@ body, html {
 		<option value="Randoplh Zarate">Randoplh Zarate</option>
 		<option value="Margarita Hernandez">Margarita Hernandez</option>
 		<option value="Tirzo Pezo">Tirzo Pezo</option>
+		<option value="Claudio Concha">Claudio Concha</option>
       <!-- Agrega más nombres de comandantes -->
 	      </select>
 		  <button class="add-option" onclick="addOption('comandanteIncidente')">Añadir opción</button>
@@ -391,6 +393,7 @@ body, html {
       <option value="Pastizal">Pastizal</option>
 	  <option value="Plantacion">Plantacion</option>
 		<option value="Desechos agricolas">Desechos agricolas</option>
+		<option value="Desechos bosque nativo">Desechos bosque nativo</option>
 		<option value="Desechos bosque nativo">Desechos bosque nativo</option>
     </select>
 
@@ -546,6 +549,8 @@ body, html {
       <option value="canal13">Canal 13</option>
       <option value="canal15">Canal 15</option>
       <option value="canal16">Canal 16</option>
+	<option value="cana20">Canal 20</option>
+		<option value="canal30">Canal 30</option>
     </select>
   </div>
 	<button class="btn-submit" onclick="enviarReporte()">Enviar Reporte a WhatsApp</button>
@@ -571,15 +576,40 @@ body, html {
   <label for="humedadRelativa">Humedad Relativa (%):</label>
   <input type="number" id="humedadRelativa" name="humedadRelativa"><br><br>
 
-  <label for="nubosidad">Nubosidad (1/8 a 8/8):</label>
-  <input type="number" id="nubosidad" name="nubosidad" min="1" max="8"><br><br>
+ <label for="nubosidad">Nubosidad (1/8 a 8/8):</label>
+<select id="nubosidad" name="nubosidad">
+  <option value="1">1/8</option>
+  <option value="2">2/8</option>
+  <option value="3">3/8</option>
+  <option value="4">4/8</option>
+  <option value="5">5/8</option>
+  <option value="6">6/8</option>
+  <option value="7">7/8</option>
+  <option value="8">8/8</option>
+</select>
+<br><br>
 
-  <label for="pendiente">Pendiente (%):</label>
-  <input type="number" id="pendiente" name="pendiente"><br><br>
+ <label for="pendiente">Pendiente (%):</label>
+<input
+  type="number"
+  id="pendiente"
+  name="pendiente"
+  min="0"
+  max="100"
+  step="5"
+  value="0"
+>
+<br><br>
 
-  <label for="topografia">Topografía:</label>
-  <input type="text" id="topografia" name="topografia"><br><br>
-
+ <label for="topografia">Topografía:</label>
+<select id="topografia" name="topografia">
+  <option value="">Seleccione una opción</option>
+  <option value="suave">Suave</option>
+  <option value="irregular">Irregular</option>
+  <option value="abrupta">Abrupta</option>
+</select>
+<br><br>
+	 
   <label for="exposicion">Exposición:</label>
   <select id="exposicion" name="exposicion">
     <option value="Este">Este</option>
@@ -587,7 +617,9 @@ body, html {
     <option value="Sur">Sur</option>
     <option value="Oeste">Oeste</option>
     <option value="Noroeste">Noroeste</option>
+	  <option value="Noroeste">Noreste</option>
     <option value="Suroeste">Suroeste</option>
+	  <option value="Sureste">Sureste</option>
 	<option value="plano">plano</option>
   </select><br><br>
 
@@ -1275,5 +1307,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
