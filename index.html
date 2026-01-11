@@ -1035,35 +1035,49 @@ body, html {
   }
       // Capturar coordenadas y convertirlas a GMS
         function captureCoordinates(decimalId, gmsId) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
 
-                // Mostrar en el campo de decimales
-                document.getElementById(decimalId).value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      document.getElementById(decimalId).value =
+        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
-                // Convertir a GMS
-                const latGMS = convertToGMS(latitude);
-                const lonGMS = convertToGMS(longitude);
+      const latGMS = convertToGMS(latitude, true);
+      const lonGMS = convertToGMS(longitude, false);
 
-                // Mostrar en el campo de GMS
-                document.getElementById(gmsId).value = `${latGMS} | ${lonGMS}`;
-            }, error => {
-                alert("No se pudo capturar las coordenadas. Asegúrate de permitir el acceso a la ubicación.");
-            });
-        }
+      document.getElementById(gmsId).value =
+        `${latGMS} | ${lonGMS}`;
+    },
+    error => {
+      alert("No se pudo capturar las coordenadas. Verifique permisos de ubicación.");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    }
+  );
+}
 
 		
 		 // Función para convertir grados decimales a GMS
-        function convertToGMS(decimal) {
-            const grados = Math.floor(Math.abs(decimal));
-            const minutosDecimal = (Math.abs(decimal) - grados) * 60;
-            const minutos = Math.floor(minutosDecimal);
-            const segundos = ((minutosDecimal - minutos) * 60).toFixed(2);
-            const direccion = decimal >= 0 ? (decimal > 0 ? "N" : "E") : (decimal < 0 ? "S" : "O");
+        function convertToGMS(decimal, isLatitude) {
+  const abs = Math.abs(decimal);
+  const grados = Math.floor(abs);
+  const minutosDecimal = (abs - grados) * 60;
+  const minutos = Math.floor(minutosDecimal);
+  const segundos = ((minutosDecimal - minutos) * 60).toFixed(2);
 
-            return `${grados}° ${minutos}' ${segundos}" ${direccion}`;
-        }
+  let direccion;
+  if (isLatitude) {
+    direccion = decimal >= 0 ? "N" : "S";
+  } else {
+    direccion = decimal >= 0 ? "E" : "O";
+  }
+
+  return `${grados}° ${minutos}' ${segundos}" ${direccion}`;
+}
 
   function copyCoordinates(sourceId, targetId) {
     document.getElementById(targetId).value = document.getElementById(sourceId).value;
@@ -1325,6 +1339,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
