@@ -589,16 +589,19 @@ body, html {
 </select>
 <br><br>
 
- <label for="pendiente">Pendiente (%):</label>
+<label for="pendiente">Pendiente:</label>
 <input
-  type="number"
+  type="range"
   id="pendiente"
   name="pendiente"
   min="0"
   max="100"
   step="5"
   value="0"
+  oninput="pendienteValor.textContent = this.value + ' %'"
 >
+
+<span id="pendienteValor">0 %</span>
 <br><br>
 
  <label for="topografia">Topografía:</label>
@@ -1307,6 +1310,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
