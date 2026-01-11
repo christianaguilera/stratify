@@ -366,7 +366,7 @@ body, html {
     </div>
 
 	    <!-- 📷 Campo Fotografía -->
-  <label for="fotoIncidente">Fotografía del lugar:</label>
+  <label for="fotoIncidente">Fotografía del GPS:</label>
   <input
     type="file"
     id="fotoIncidente"
@@ -1178,6 +1178,7 @@ function enviarFormularioMeteorologia() {
     *E) Lugar del Incidente:* ${lugarE}
     *F) Coordenadas Operativas:* ${coordenadasOperativas}
 	   Coordenadas GMS: ${coordenadasGMS}
+	    Foto GPS: ${fotoIncidente}
     *G) Solicitud de Recursos:* ${solicitudRecursos}
     *H) Amenaza a:* ${amenaza}
     *I) Combustible Afectado:* ${combustible}
@@ -1333,6 +1334,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
