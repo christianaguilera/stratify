@@ -358,22 +358,14 @@ body, html {
     <div class="form-section">
     <label>F - Coordenadas operativas</label>
     <div class="input-with-button">
-      <input type="text" id="coordenadasOperativas" readonly>
-	  <label for="coordenadasGMS">Coordenadas (GMS):</label>
-	  <input type="text" id="coordenadasGMS" readonly>
-	
+     <input type="text" id="coordenadasOperativas" readonly>
+	 <label for="coordenadasGMS">Coordenadas (GMS):</label>
+	 <input type="text" id="coordenadasGMS" readonly>
+	Fotografía del GPS: ADJUNTA
       <button onclick="captureCoordinates('coordenadasOperativas', 'coordenadasGMS')">Capturar</button>
     </div>
 
-	    <!-- 📷 Campo Fotografía -->
-  <label for="fotoIncidente">Fotografía del GPS:</label>
-  <input
-    type="file"
-    id="fotoIncidente"
-    name="fotoIncidente"
-    accept="image/*"
-    capture="environment"
-  >
+
 </div>
 
     <label>G - Solicitud de Recursos</label>
@@ -1041,25 +1033,48 @@ body, html {
       select.add(option);
     }
   }
-      // Capturar coordenadas y convertirlas a GMS
-        function captureCoordinates(decimalId, gmsId) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+     <script>
+function captureCoordinates(decimalId, gmsId) {
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const accuracy = position.coords.accuracy; // metros
 
-                // Mostrar en el campo de decimales
-                document.getElementById(decimalId).value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      // 🚫 Validar precisión
+      if (accuracy > 10) {
+        alert(
+          `Precisión GPS insuficiente (${accuracy.toFixed(1)} m).\n` +
+          `Espere unos segundos y vuelva a capturar.\n` +
+          `Se requiere precisión menor a 10 m.`
+        );
+        return;
+      }
 
-                // Convertir a GMS
-                const latGMS = convertToGMS(latitude);
-                const lonGMS = convertToGMS(longitude);
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
 
-                // Mostrar en el campo de GMS
-                document.getElementById(gmsId).value = `${latGMS} | ${lonGMS}`;
-            }, error => {
-                alert("No se pudo capturar las coordenadas. Asegúrate de permitir el acceso a la ubicación.");
-            });
-        }
+      // Mostrar coordenadas decimales
+      document.getElementById(decimalId).value =
+        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+      // Convertir a GMS
+      const latGMS = convertToGMS(latitude, true);
+      const lonGMS = convertToGMS(longitude, false);
+
+      document.getElementById(gmsId).value =
+        `${latGMS} | ${lonGMS}`;
+    },
+    error => {
+      alert("No se pudo capturar la ubicación. Verifique permisos de GPS.");
+    },
+    {
+      enableHighAccuracy: true, // 🔥 GPS real
+      timeout: 15000,
+      maximumAge: 0
+    }
+  );
+}
+
+
 		
 		 // Función para convertir grados decimales a GMS
         function convertToGMS(decimal) {
@@ -1334,6 +1349,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
