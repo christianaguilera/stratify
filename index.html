@@ -361,8 +361,9 @@ body, html {
      <input type="text" id="coordenadasOperativas" readonly>
 	 <label for="coordenadasGMS">Coordenadas (GMS):</label>
 	 <input type="text" id="coordenadasGMS" readonly>
+	
+      <button class="add-option" onclick="captureCoordinates('coordenadasOperativas', 'coordenadasGMS')">Capturar coordenadas</button>
 	Fotografía del GPS: ADJUNTA
-      <button onclick="captureCoordinates('coordenadasOperativas', 'coordenadasGMS')">Capturar</button>
     </div>
 
 
@@ -370,6 +371,7 @@ body, html {
 
     <label>G - Solicitud de Recursos</label>
     <select id="solicitudRecursos" multiple>
+	  <option value="Sin solicitud">Sin solicitud</option>
       <option value="Helicóptero">Helicóptero</option>
       <option value="Brigada">Brigada</option>
       <option value="Técnico">Técnico</option>
@@ -385,8 +387,10 @@ body, html {
       <option value="Casas">Viviendas R-53</option>
       <option value="Bosque Nativo">Bosque Nativo</option>
       <option value="APR">APR - SSR</option>
-	   <option value="APR">Colegio</option>
-    </select>
+	  <option value="APR">Colegio</option>
+	  <option value="Posta de salud">Posta de salud</option>
+	  <option value="Sin amenaza">Sin amenaza</option>
+	</select>
 
     <label>I - Combustible Afectado al Arribo</label>
     <select id="combustible" multiple>
@@ -396,7 +400,7 @@ body, html {
 	  <option value="Plantacion">Plantacion</option>
 		<option value="Desechos agricolas">Desechos agricolas</option>
 		<option value="Desechos bosque nativo">Desechos bosque nativo</option>
-		<option value="Desechos bosque nativo">Desechos bosque nativo</option>
+		<option value="Basura">Basura</option>
     </select>
 
     <label>J - Comportamiento General del Incendio</label>
@@ -1339,6 +1343,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
