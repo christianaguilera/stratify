@@ -1,0 +1,180 @@
+{
+  "Grupo": {
+    "Causa general": [
+      "Causa especifica"
+    ]
+  },
+  "nan": {
+    "Faenas Forestales": [
+      "Faenas Forestales"
+    ]
+  },
+  "ACCIDENTALES": {
+    "Faenas Forestales": [
+      "Quema avisada de desechos forestales que se propaga libre y sin control",
+      "Partículas incandescentes generadas por roce de maquinaria o herramienta forestal con rocas, cercos o material metálico",
+      "Otros incendios accidentales no clasificados en faenas forestales"
+    ],
+    "Faenas agrícolas y pecuarias": [
+      "Faenas agrícolas y pecuarias",
+      "Quema avisada de desechos agrícolas que se propaga libre y sin control",
+      "Partículas incandescentes generadas por roce de maquinaria o herramienta agrícola con rocas, cercos o material metálico",
+      "Otros incendios accidentales no clasificados en faenas agropecuarias"
+    ],
+    "Actividades al aire libre (camping, excursiones, caza, pesca, otros)": [
+      "Actividades al aire libre (camping, excursiones, caza, pesca, otros)",
+      "Empleo de fuentes de calor en áreas habilitadas, como fogatas, cocinillas u otro elemento para cocinar, calefacción, iluminación u otros fines",
+      "Vías férreas",
+      "Accidente ferroviario",
+      "Partículas incandescentes generadas por el paso del ferrocarril (con mantención de fajas de seguridad)"
+    ],
+    "Actividades de control y extinción de incendios forestales": [
+      "Actividades de control y extinción de incendios forestales",
+      "Caída de avión, helicóptero u otras aeronaves, en operaciones de combate de incendios forestales o reconocimientos de zonas"
+    ],
+    "Parcelaciones, edificaciones residenciales, industriales u otras en zonas rurales o de interfaz": [
+      "Parcelaciones, edificaciones residenciales, industriales u otras en zonas rurales o de interfaz",
+      "Incendio estructural"
+    ],
+    "Originados por desplazamiento de personas, vehículos o aeronaves": [
+      "Originados por desplazamiento de personas, vehículos o aeronaves",
+      "Accidente o incendio de vehículo",
+      "Caída de avión, helicóptero u otras aeronaves en actividades u operaciones, distintas de incendios forestales",
+      "Generado por vehículo (roce metálico, tubo de escape, desperfecto, otros)"
+    ],
+    "Otras quemas": [
+      "Otras quemas",
+      "Quema avisada con fines de limpieza en canales, cunetas, cercos o caminos (en predios particulares o públicos) que se propaga libre y sin control"
+    ],
+    "Líneas eléctricas": [
+      "Líneas eléctricas",
+      "Contacto de fauna con el tendido eléctrico",
+      "Contacto de material vegetal (ej. Corteza de eucalipto) o no vegetal (ej. Pizarreños),\ndesprendido y desplazado por acción del viento, con el tendido eléctrico",
+      "Otro accidente eléctrico no clasificado"
+    ],
+    "Otras causas": [
+      "Otras causas",
+      "Otras causas accidentales no clasificadas"
+    ]
+  },
+  "INTENCIONALES": {
+    "Incendios Intencionales": [
+      "Incendios Intencionales",
+      "No se identifica la motivación",
+      "Conflicto entre personas (venganza, familiares, pasionales, otros)",
+      "Ataque incendiario (ataques dirigidos a bienes muebles o inmuebles)",
+      "Conflicto territorial o patrimonial (deslindes, propiedades, apropiaciones de terreno, otros)",
+      "Obtención de beneficios económicos (compra de madera, presión por trabajo, robo maderero, otros)",
+      "Para observar operaciones de combate de incendios forestales",
+      "Encubrimiento de delitos o faltas",
+      "Extracción o producción de hongos o frutos",
+      "Cambio irregular de uso de suelo (habitacional, parcelaciones, agrícola, recreacional, otros)"
+    ]
+  },
+  "NATURALES": {
+    "Incendios naturales": [
+      "Incendios naturales",
+      "Caída de rayo",
+      "Actividad volcánica",
+      "Otras causas naturales no clasificadas"
+    ]
+  },
+  "NEGLIGENTES": {
+    "Faenas forestales": [
+      "Faenas forestales",
+      "Quema no avisada de desechos forestales que se propaga libre y sin control",
+      "Incendio de maquinaria en faena forestal (desperfecto, falta de mantención, otros)",
+      "Contacto o corte de conductor eléctrico producto de faena forestal",
+      "Partícula incandescente generada sin roce por vehículo, maquinaria o herramienta forestal",
+      "Rebrote de quema forestal no avisada que se propaga libre y sin control",
+      "Quema avisada de desechos forestales mal ejecutada que se propaga libre y sin control (plan de quemas, aviso de quemas)",
+      "Empleo de fuentes de calor en zonas de faenas/campamentos forestales",
+      "Otras causas negligentes no clasificados en faenas forestales"
+    ],
+    "Faenas agrícolas y pecuarias": [
+      "Faenas agrícolas y pecuarias",
+      "Quema no avisada de desechos agrícolas que se propaga libre y sin control",
+      "Incendio de maquinaria agrícola (desperfecto, falta de mantención, otros)",
+      "Contacto o corte de conductor eléctrico producto de faena agrícola o pecuaria",
+      "Partícula incandescente generada sin roce por vehículo, maquinaria o herramienta agrícola",
+      "Rebrote de quema agrícola o pecuaria no avisada que se propaga libre y sin control",
+      "Quema avisada de desechos agrícolas mal ejecutada que se propaga libre y sin control (según plan de quema y/o aviso de quemas)",
+      "Empleo de fuentes de calor en zonas de faenas agropecuarias",
+      "Otras causas negligentes no clasificados en faenas agrícolas y pecuarias"
+    ],
+    "Actividades al aire libre (camping, excursiones, caza, pesca, otros)": [
+      "Actividades al aire libre (camping, excursiones, caza, pesca, otros)",
+      "Empleo de fuentes de calor en áreas no habilitadas, como fogatas para cocinar, cocinillas, calefacción, elementos para iluminar u otros."
+    ],
+    "Vías férreas": [
+      "Vías férreas",
+      "Partículas incandescentes generadas por el paso del ferrocarril (sin mantención de fajas de seguridad)",
+      "Empleo de fuentes de calor en faena de mantención o reparación de líneas férreas",
+      "Contacto o corte del conductor eléctrico de línea férrea"
+    ],
+    "Actividades de control y extinción de incendios forestales": [
+      "Actividades de control y extinción de incendios forestales",
+      "Rebrote de incendio anterior, declarado extinto",
+      "Generado por el uso de equipos o herramientas en actividades de control y/o extinción"
+    ],
+    "Parcelaciones, edificaciones residenciales, industriales u otras en zonas rurales o de interfaz": [
+      "Parcelaciones, edificaciones residenciales, industriales u otras en zonas rurales o de interfaz",
+      "Generado por el uso de equipos o herramientas con fines de construcción, limpieza o\nmontaje de estructuras",
+      "Generado por conexión irregular de energía eléctrica",
+      "Generado por infraestructura destinada a la producción de energía (solar, eólica, otros)",
+      "Generado por material en combustión expulsado desde chimeneas, cocina a leña, otros (mantención)",
+      "Empleo de fuentes de calor en actividades relacionadas a parcelaciones (asados, tijerales,\nfogatas, otros)",
+      "Desecho de cenizas de chimenea, calefacción, cocina leña, tinajas, otros"
+    ],
+    "Originados por desplazamiento de personas, vehículos o aeronaves": [
+      "Originados por desplazamiento de personas, vehículos o aeronaves",
+      "Empleo de fuentes de calor en actividades religiosas, de peregrinación o de veneración",
+      "Empleo de fuentes de calor para señalización en la ruta o faenas de mantención (campamentos de empresas de mantención, otras)"
+    ],
+    "Otras quemas": [
+      "Otras quemas",
+      "Quema no avisada con fines de limpieza en canales, cunetas, cercos o caminos (en predios particulares o públicos) que se propaga libre y sin control",
+      "Quema de basura residencial o desechos vegetales",
+      "Quema de desechos industriales",
+      "Empleo de fuentes de calor para eliminación de fauna (roedores, reptiles, avispas, otros)",
+      "Empleo de fuentes de calor en vertederos o basurales"
+    ],
+    "Líneas eléctricas": [
+      "Líneas eléctricas",
+      "Combustión de la vegetación, producto del contacto o proximidad con el tendido eléctrico",
+      "Corte de conductor eléctrico por caída de rama o árbol (excepto por faena forestal o agrícola)",
+      "Corte de conductor eléctrico por caída o fatiga de estructura de tendido eléctrico o postación",
+      "Sobrecalentamiento de estructuras asociados al sistema eléctrico (poste, transformador,\nuniones, aisladores, otros)",
+      "Otras causas eléctricas negligentes no clasificadas"
+    ],
+    "Otras causas": [
+      "Otras causas",
+      "Maniobras militares o policiales",
+      "Faenas mineras",
+      "Explosiones",
+      "Acciones asociadas a fumar",
+      "Empleo de fuentes de calor por menores de edad",
+      "Fuegos artificiales, bengalas, otros artefactos pirotécnicos o globos aerostáticos",
+      "Elaboración y/o cocción de ladrillos",
+      "Ignición por combustión espontánea en combustibles orgánicos (fardos de pastos, acopios de aserrín o chips de madera)",
+      "Ignición por combustión espontánea en vertederos sin tratamientos y sin reciclaje",
+      "Empleo de fuentes de calor para eliminar recubrimiento de conductores eléctricos",
+      "Empleo de fuentes de calor por personas en situación de calle",
+      "Otras actividades negligentes no clasificadas"
+    ],
+    "Producción y/o extracción de productos y/o derivados del bosque": [
+      "Producción y/o extracción de productos y/o derivados del bosque",
+      "Elaboración de carbón",
+      "Empleo de fuentes de calor en faenas de extracción de productos del bosque (hongos, frutos, otros), como fogatas para cocinar, calefacción, elementos para iluminar u otros.",
+      "Empleo de fuentes de calor en faena de extracción y/o confección de leña no industrial",
+      "Empleo de fuentes de calor en actividades de apicultura"
+    ]
+  },
+  "INDETERMINADA": {
+    "Incendios de causa indeterminada": [
+      "Incendios de causa indeterminada",
+      "Se investiga, pero no es posible establecer la causa",
+      "La causa no es investigada"
+    ]
+  }
+}
