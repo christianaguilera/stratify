@@ -1,4 +1,4 @@
-const CACHE_NAME = 'reportes-v24';
+const CACHE_NAME = 'reportes-v25';
 const FILES_TO_CACHE = [
   '/stratify/',
   '/stratify/index.html',
